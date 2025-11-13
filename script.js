@@ -1,253 +1,216 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("calculator-form");
-  const spendModeSelect = document.getElementById("spendMode");
-  const withdrawRateField = document.getElementById("withdrawRateField");
-  const fixedSpendingField = document.getElementById("fixedSpendingField");
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-  const warningsEl = document.getElementById("warnings");
-  const resultsEl = document.getElementById("results");
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.5;
+  background: #f5f5f7;
+  color: #111827;
+}
 
-  const portfolioInput = document.getElementById("portfolioValue");
-  const withdrawalRateInput = document.getElementById("withdrawalRate");
-  const fixedSpendingInput = document.getElementById("fixedSpending");
-  const bucket1YearsInput = document.getElementById("bucket1Years");
-  const bucket2YearsInput = document.getElementById("bucket2Years");
-  const desiredStockPctInput = document.getElementById("desiredStockPct");
-  const usStockSplitInput = document.getElementById("usStockSplit");
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
 
-  function getNumber(input, fallback = 0) {
-    const v = parseFloat(input.value);
-    return Number.isFinite(v) ? v : fallback;
+header {
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.9rem;
+}
+
+.subtitle {
+  margin: 0.25rem 0 0;
+  color: #6b7280;
+}
+
+main {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 1.5rem;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 0.85rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.card h2 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.2rem;
+}
+
+h3 {
+  margin: 0.75rem 0 0.4rem;
+  font-size: 1rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.field-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+label {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+input,
+select {
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  background: #f9fafb;
+}
+
+input:focus,
+select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.15);
+  background: #ffffff;
+}
+
+.primary-btn {
+  margin-top: 0.5rem;
+  align-self: flex-start;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: #111827;
+  color: #f9fafb;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
+}
+
+.primary-btn:hover {
+  opacity: 0.9;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
+  transform: translateY(-1px);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
+
+.results {
+  font-size: 0.9rem;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.result-block {
+  padding: 0.7rem 0.9rem;
+  border-radius: 0.75rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.result-block h3 {
+  margin-top: 0;
+  margin-bottom: 0.25rem;
+  font-size: 0.95rem;
+}
+
+.result-block p {
+  margin: 0.15rem 0;
+}
+
+.result-label {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+.result-value {
+  font-weight: 600;
+}
+
+.section-title {
+  margin-top: 0.5rem;
+  margin-bottom: 0.15rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.trade-list {
+  margin: 0.3rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.trade-list li {
+  margin: 0.15rem 0;
+}
+
+.muted {
+  color: #9ca3af;
+}
+
+.warnings {
+  margin-bottom: 0.5rem;
+}
+
+.warning {
+  padding: 0.45rem 0.7rem;
+  border-radius: 0.6rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  color: #92400e;
+}
+
+footer {
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.hidden {
+  display: none;
+}
+
+.divider {
+  margin: 0.75rem 0;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 900px) {
+  main {
+    grid-template-columns: minmax(0, 1fr);
   }
-
-  function formatCurrency(value) {
-    if (!Number.isFinite(value)) return "-";
-    return value.toLocaleString(undefined, {
-      style: "currency",
-      currency: "USD",
-      maximumFractionDigits: 0
-    });
-  }
-
-  function formatPercent(value) {
-    if (!Number.isFinite(value)) return "-";
-    return value.toFixed(1) + " %";
-  }
-
-  function clearWarnings() {
-    warningsEl.innerHTML = "";
-  }
-
-  function addWarning(text) {
-    const div = document.createElement("div");
-    div.className = "warning";
-    div.textContent = text;
-    warningsEl.appendChild(div);
-  }
-
-  function handleSpendModeChange() {
-    const mode = spendModeSelect.value;
-    if (mode === "percent") {
-      withdrawRateField.classList.remove("hidden");
-      fixedSpendingField.classList.add("hidden");
-    } else {
-      withdrawRateField.classList.add("hidden");
-      fixedSpendingField.classList.remove("hidden");
-    }
-  }
-
-  spendModeSelect.addEventListener("change", () => {
-    handleSpendModeChange();
-    calculate();
-  });
-
-  function calculate() {
-    clearWarnings();
-
-    const P = getNumber(portfolioInput, 0);
-    if (P <= 0) {
-      resultsEl.innerHTML = `<p class="muted">Enter a positive portfolio value to see results.</p>`;
-      return;
-    }
-
-    const mode = spendModeSelect.value;
-    let S = 0;
-    let wrate = 0;
-
-    if (mode === "percent") {
-      wrate = getNumber(withdrawalRateInput, 4);
-      if (wrate <= 0) {
-        addWarning("Withdrawal rate must be greater than 0% when using percentage mode.");
-        resultsEl.innerHTML = `<p class="muted">Adjust the withdrawal rate to continue.</p>`;
-        return;
-      }
-      S = (wrate / 100) * P;
-    } else {
-      S = getNumber(fixedSpendingInput, 0);
-      if (S <= 0) {
-        addWarning("Annual spending must be greater than $0 when using fixed amount mode.");
-        resultsEl.innerHTML = `<p class="muted">Adjust the annual spending to continue.</p>`;
-        return;
-      }
-      wrate = (S / P) * 100;
-    }
-
-    const bucket1Years = Math.max(0, getNumber(bucket1YearsInput, 2));
-    const bucket2Years = Math.max(0, getNumber(bucket2YearsInput, 8));
-
-    const B1_target = S * bucket1Years;
-    const B2_target = S * bucket2Years;
-    const safeTotal = B1_target + B2_target;
-
-    let B3_target = P - safeTotal;
-    if (B3_target < 0) {
-      addWarning(
-        "Bucket 1 + Bucket 2 require more than your total portfolio. Bucket 3 (stocks) is forced to $0. Consider lowering years of spending or your withdrawal rate."
-      );
-      B3_target = 0;
-    }
-
-    const impliedStockPct = (B3_target / P) * 100;
-    const impliedSafePct = (safeTotal / P) * 100;
-
-    const desiredStockPctRaw = getNumber(desiredStockPctInput, 60);
-    const desiredStockPct = Math.min(100, Math.max(0, desiredStockPctRaw));
-
-    if (Math.abs(impliedStockPct - desiredStockPct) > 5) {
-      addWarning(
-        `Your bucket configuration implies about ${impliedStockPct.toFixed(
-          1
-        )}% in stocks, but your desired stock allocation is ${desiredStockPct.toFixed(
-          1
-        )}%. To align them, adjust years in buckets, portfolio value, or withdrawal rate.`
-      );
-    }
-
-    if (wrate > 6) {
-      addWarning(
-        `Your effective withdrawal rate is ${wrate.toFixed(
-          2
-        )}%. Historically, long-term sustainable rates are often closer to ~3–4%. High withdrawal rates increase the risk of running out of money.`
-      );
-    }
-
-    const B1_years_actual = S > 0 ? B1_target / S : 0;
-    const B2_years_actual = S > 0 ? B2_target / S : 0;
-    const B3_years_actual = S > 0 ? B3_target / S : 0;
-
-    const usSplitRaw = getNumber(usStockSplitInput, 50);
-    const usSplit = Math.min(100, Math.max(0, usSplitRaw));
-
-    const usStock = B3_target * (usSplit / 100);
-    const intlStock = B3_target - usStock;
-
-    const cashTarget = B1_target; // Bucket 1
-    const bondTarget = B2_target; // Bucket 2
-
-    const html = `
-      <div class="results-grid">
-        <div class="result-block">
-          <h3>Spending &amp; Coverage</h3>
-          <p><span class="result-label">Annual spending (S):</span></p>
-          <p class="result-value">${formatCurrency(S)}</p>
-          <p><span class="result-label">Effective withdrawal rate:</span> ${formatPercent(wrate)}</p>
-        </div>
-
-        <div class="result-block">
-          <h3>Bucket 1 – Cash</h3>
-          <p><span class="result-label">Target amount:</span></p>
-          <p class="result-value">${formatCurrency(cashTarget)}</p>
-          <p><span class="result-label">Years of coverage:</span> ${B1_years_actual.toFixed(2)}</p>
-        </div>
-
-        <div class="result-block">
-          <h3>Bucket 2 – Bonds</h3>
-          <p><span class="result-label">Target amount:</span></p>
-          <p class="result-value">${formatCurrency(bondTarget)}</p>
-          <p><span class="result-label">Years of coverage:</span> ${B2_years_actual.toFixed(2)}</p>
-        </div>
-
-        <div class="result-block">
-          <h3>Bucket 3 – Stocks</h3>
-          <p><span class="result-label">Target amount:</span></p>
-          <p class="result-value">${formatCurrency(B3_target)}</p>
-          <p><span class="result-label">Years of coverage (if spending came from stocks only):</span> ${B3_years_actual.toFixed(
-            2
-          )}</p>
-        </div>
-
-        <div class="result-block">
-          <h3>Implied Allocation</h3>
-          <p><span class="result-label">Stocks (Bucket 3):</span> ${formatPercent(impliedStockPct)}</p>
-          <p><span class="result-label">Bonds + Cash (Buckets 1+2):</span> ${formatPercent(impliedSafePct)}</p>
-          <p><span class="result-label">Desired stock allocation:</span> ${desiredStockPct.toFixed(1)} %</p>
-        </div>
-
-        <div class="result-block">
-          <h3>Asset Breakdown</h3>
-          <p><span class="result-label">Cash (Bucket 1):</span> ${formatCurrency(cashTarget)}</p>
-          <p><span class="result-label">Bonds (Bucket 2):</span> ${formatCurrency(bondTarget)}</p>
-          <p><span class="result-label">US stocks (${usSplit.toFixed(0)}% of Bucket 3):</span> ${formatCurrency(
-            usStock
-          )}</p>
-          <p><span class="result-label">International stocks (${(100 - usSplit).toFixed(
-            0
-          )}% of Bucket 3):</span> ${formatCurrency(intlStock)}</p>
-        </div>
-      </div>
-    `;
-
-    resultsEl.innerHTML = html;
-
-    // Persist inputs in localStorage for convenience
-    const state = {
-      portfolioValue: P,
-      mode,
-      withdrawalRate: getNumber(withdrawalRateInput, 4),
-      fixedSpending: getNumber(fixedSpendingInput, 0),
-      bucket1Years,
-      bucket2Years,
-      desiredStockPct,
-      usStockSplit: usSplit
-    };
-    try {
-      window.localStorage.setItem("retirementBucketPlannerState", JSON.stringify(state));
-    } catch (e) {
-      // ignore storage issues
-    }
-  }
-
-  // Restore saved state if present
-  try {
-    const saved = window.localStorage.getItem("retirementBucketPlannerState");
-    if (saved) {
-      const state = JSON.parse(saved);
-      if (state && typeof state === "object") {
-        if ("portfolioValue" in state) portfolioInput.value = state.portfolioValue;
-        if ("mode" in state) spendModeSelect.value = state.mode;
-        if ("withdrawalRate" in state) withdrawalRateInput.value = state.withdrawalRate;
-        if ("fixedSpending" in state && state.fixedSpending > 0)
-          fixedSpendingInput.value = state.fixedSpending;
-        if ("bucket1Years" in state) bucket1YearsInput.value = state.bucket1Years;
-        if ("bucket2Years" in state) bucket2YearsInput.value = state.bucket2Years;
-        if ("desiredStockPct" in state) desiredStockPctInput.value = state.desiredStockPct;
-        if ("usStockSplit" in state) usStockSplitInput.value = state.usStockSplit;
-      }
-    }
-  } catch (e) {
-    // ignore
-  }
-
-  handleSpendModeChange();
-  calculate();
-
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    calculate();
-  });
-
-  // Live updates as you type
-  form.addEventListener("input", () => {
-    calculate();
-  });
-});
+}
