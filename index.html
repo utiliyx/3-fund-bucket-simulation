@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Retirement Bucket Planner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Retirement Bucket Planner</h1>
+      <p class="subtitle">
+        Model a 3-bucket &amp; 3-fund style plan with adjustable stock allocation and withdrawal rate.
+      </p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Inputs</h2>
+        <form id="calculator-form">
+          <div class="field">
+            <label for="portfolioValue">Total portfolio value ($)</label>
+            <input type="number" id="portfolioValue" min="0" step="1000" placeholder="1000000" />
+          </div>
+
+          <div class="field-group">
+            <div class="field">
+              <label for="spendMode">Spending basis</label>
+              <select id="spendMode">
+                <option value="percent">Percentage of portfolio</option>
+                <option value="fixed">Fixed annual amount</option>
+              </select>
+            </div>
+
+            <div class="field" id="withdrawRateField">
+              <label for="withdrawalRate">Withdrawal rate (% of portfolio)</label>
+              <input type="number" id="withdrawalRate" min="0" max="20" step="0.1" value="4" />
+            </div>
+
+            <div class="field hidden" id="fixedSpendingField">
+              <label for="fixedSpending">Annual spending ($)</label>
+              <input type="number" id="fixedSpending" min="0" step="1000" placeholder="40000" />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field">
+              <label for="bucket1Years">Bucket 1 (cash) years of spending</label>
+              <input type="number" id="bucket1Years" min="0" step="0.5" value="2" />
+            </div>
+
+            <div class="field">
+              <label for="bucket2Years">Bucket 2 (bonds) years of spending</label>
+              <input type="number" id="bucket2Years" min="0" step="0.5" value="8" />
+            </div>
+          </div>
+
+          <div class="field-group">
+            <div class="field">
+              <label for="desiredStockPct">
+                Desired stock allocation (% of portfolio)
+              </label>
+              <input type="number" id="desiredStockPct" min="0" max="100" step="1" value="60" />
+            </div>
+
+            <div class="field">
+              <label for="usStockSplit">
+                US stock share of Bucket 3 (% US, rest International)
+              </label>
+              <input type="number" id="usStockSplit" min="0" max="100" step="1" value="50" />
+            </div>
+          </div>
+
+          <button type="submit" class="primary-btn">Calculate</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Results</h2>
+        <div id="warnings" class="warnings"></div>
+        <div id="results" class="results">
+          <p class="muted">Fill in the inputs and hit “Calculate” to see your plan.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>
+        Built for exploring bucket-based retirement allocations. Adjust numbers, see how the buckets and
+        implied stock/bond mix change.
+      </p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
