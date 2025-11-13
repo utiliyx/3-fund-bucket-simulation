@@ -2,27 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Retirement Bucket Planner</title>
+  <title>Bucket + 3-Fund Simulator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app">
     <header>
-      <h1>Retirement Bucket Planner</h1>
+      <h1>Bucket + 3-Fund Simulator</h1>
       <p class="subtitle">
-        Model a 3-bucket &amp; 3-fund style plan with adjustable stock allocation and withdrawal rate.
+        Enter your current holdings and target rules to see where every dollar should go.
       </p>
     </header>
 
     <main>
       <section class="card">
-        <h2>Inputs</h2>
-        <form id="calculator-form">
-          <div class="field">
-            <label for="portfolioValue">Total portfolio value ($)</label>
-            <input type="number" id="portfolioValue" min="0" step="1000" placeholder="1000000" />
+        <h2>Current Portfolio</h2>
+        <form id="planner-form">
+          <div class="field-group">
+            <div class="field">
+              <label for="currentCash">Cash / short-term (Bucket 1) ($)</label>
+              <input type="number" id="currentCash" min="0" step="100" placeholder="20000" />
+            </div>
+            <div class="field">
+              <label for="currentBonds">Bond funds (Bucket 2) ($)</label>
+              <input type="number" id="currentBonds" min="0" step="100" placeholder="300000" />
+            </div>
           </div>
+
+          <div class="field-group">
+            <div class="field">
+              <label for="currentUS">US total market fund ($)</label>
+              <input type="number" id="currentUS" min="0" step="100" placeholder="350000" />
+            </div>
+            <div class="field">
+              <label for="currentIntl">International total market fund ($)</label>
+              <input type="number" id="currentIntl" min="0" step="100" placeholder="330000" />
+            </div>
+          </div>
+
+          <hr class="divider" />
+
+          <h3>Spending &amp; Bucket Rules</h3>
 
           <div class="field-group">
             <div class="field">
@@ -49,30 +70,33 @@
               <label for="bucket1Years">Bucket 1 (cash) years of spending</label>
               <input type="number" id="bucket1Years" min="0" step="0.5" value="2" />
             </div>
-
             <div class="field">
               <label for="bucket2Years">Bucket 2 (bonds) years of spending</label>
               <input type="number" id="bucket2Years" min="0" step="0.5" value="8" />
             </div>
           </div>
 
+          <hr class="divider" />
+
+          <h3>Allocation Targets</h3>
+
           <div class="field-group">
             <div class="field">
               <label for="desiredStockPct">
-                Desired stock allocation (% of portfolio)
+                Desired stock allocation (% of total portfolio)
               </label>
               <input type="number" id="desiredStockPct" min="0" max="100" step="1" value="60" />
             </div>
 
             <div class="field">
               <label for="usStockSplit">
-                US stock share of Bucket 3 (% US, rest International)
+                US stock share of stocks (% US, rest International)
               </label>
               <input type="number" id="usStockSplit" min="0" max="100" step="1" value="50" />
             </div>
           </div>
 
-          <button type="submit" class="primary-btn">Calculate</button>
+          <button type="submit" class="primary-btn">Calculate targets &amp; trades</button>
         </form>
       </section>
 
@@ -80,15 +104,15 @@
         <h2>Results</h2>
         <div id="warnings" class="warnings"></div>
         <div id="results" class="results">
-          <p class="muted">Fill in the inputs and hit “Calculate” to see your plan.</p>
+          <p class="muted">Fill in your portfolio and rules, then hit “Calculate”.</p>
         </div>
       </section>
     </main>
 
     <footer>
       <p>
-        Built for exploring bucket-based retirement allocations. Adjust numbers, see how the buckets and
-        implied stock/bond mix change.
+        Use this as a sandbox: tweak spending, bucket years, and allocations to “simulate” different setups
+        and get concrete dollar guidance.
       </p>
     </footer>
   </div>
