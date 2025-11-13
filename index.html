@@ -2,275 +2,609 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Bucket + 3-Fund Simulator</title>
+  <title>3-Fund / 3-Bucket Simulator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
-    *,
-    *::before,
-    *::after {
+    * {
       box-sizing: border-box;
     }
 
     body {
-      margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.5;
+      margin: 0;
+      padding: 0;
       background: #f5f5f7;
-      color: #111827;
+      color: #222;
     }
 
-    .app {
+    .container {
       max-width: 1100px;
       margin: 0 auto;
       padding: 1.5rem;
     }
 
-    header {
-      margin-bottom: 1.5rem;
+    h1, h2, h3 {
+      margin-top: 1.2rem;
+      margin-bottom: 0.6rem;
     }
 
     h1 {
-      margin: 0;
-      font-size: 1.9rem;
-    }
-
-    .subtitle {
-      margin: 0.25rem 0 0;
-      color: #6b7280;
-    }
-
-    main {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-      gap: 1.5rem;
+      font-size: 1.8rem;
     }
 
     .card {
-      background: #ffffff;
-      border-radius: 0.85rem;
-      padding: 1.25rem 1.5rem;
-      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      margin-bottom: 0.75rem;
-      font-size: 1.2rem;
-    }
-
-    h3 {
-      margin: 0.75rem 0 0.4rem;
-      font-size: 1rem;
-    }
-
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 0.9rem;
-    }
-
-    .field-group {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 0.75rem;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
+      background: #fff;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
     }
 
     label {
-      font-size: 0.9rem;
-      color: #374151;
-    }
-
-    input,
-    select {
-      padding: 0.5rem 0.6rem;
-      border-radius: 0.5rem;
-      border: 1px solid #d1d5db;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.15s ease, box-shadow 0.15s ease;
-      background: #f9fafb;
-    }
-
-    input:focus,
-    select:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.15);
-      background: #ffffff;
-    }
-
-    .primary-btn {
-      margin-top: 0.5rem;
-      align-self: flex-start;
-      padding: 0.55rem 1.1rem;
-      border-radius: 999px;
-      border: none;
-      font-size: 0.95rem;
-      font-weight: 500;
-      cursor: pointer;
-      background: #111827;
-      color: #f9fafb;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, opacity 0.1s ease;
-    }
-
-    .primary-btn:hover {
-      opacity: 0.9;
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.25);
-      transform: translateY(-1px);
-    }
-
-    .primary-btn:active {
-      transform: translateY(0);
-      box-shadow: none;
-    }
-
-    .results {
-      font-size: 0.9rem;
-    }
-
-    .results-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 0.75rem;
-      margin-top: 0.75rem;
-    }
-
-    .result-block {
-      padding: 0.7rem 0.9rem;
-      border-radius: 0.75rem;
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-    }
-
-    .result-block h3 {
-      margin-top: 0;
+      display: inline-block;
       margin-bottom: 0.25rem;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      font-weight: 500;
     }
 
-    .result-block p {
-      margin: 0.15rem 0;
-    }
-
-    .result-label {
-      color: #6b7280;
-      font-size: 0.85rem;
-    }
-
-    .result-value {
-      font-weight: 600;
-    }
-
-    .section-title {
-      margin-top: 0.5rem;
-      margin-bottom: 0.15rem;
-      font-weight: 600;
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      padding: 0.35rem 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
       font-size: 0.9rem;
     }
 
-    .trade-list {
-      margin: 0.3rem 0 0;
-      padding-left: 1.1rem;
+    input[type="number"]:focus,
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 1px rgba(37,99,235,0.15);
     }
 
-    .trade-list li {
-      margin: 0.15rem 0;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    th, td {
+      padding: 0.4rem 0.35rem;
+      border-bottom: 1px solid #e5e5e5;
+      text-align: right;
+    }
+
+    th:first-child,
+    td:first-child {
+      text-align: left;
+    }
+
+    th {
+      background: #f3f4f6;
+      font-weight: 600;
+    }
+
+    tfoot td {
+      font-weight: 600;
+      background: #f9fafb;
+    }
+
+    .note {
+      font-size: 0.8rem;
+      color: #555;
+      margin-top: 0.25rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.08rem 0.4rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      background: #e5e7eb;
+      color: #374151;
+      margin-left: 0.25rem;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      background: #eef2ff;
+      color: #312e81;
+      margin-left: 0.35rem;
+    }
+
+    .subheading {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
     }
 
     .muted {
-      color: #9ca3af;
-    }
-
-    .warnings {
-      margin-bottom: 0.5rem;
-    }
-
-    .warning {
-      padding: 0.45rem 0.7rem;
-      border-radius: 0.6rem;
-      font-size: 0.85rem;
-      margin-bottom: 0.25rem;
-      background: #fef3c7;
-      border: 1px solid #fde68a;
-      color: #92400e;
-    }
-
-    footer {
-      margin-top: 1.5rem;
-      font-size: 0.8rem;
       color: #6b7280;
     }
 
-    .hidden {
-      display: none;
+    .align-right {
+      text-align: right;
     }
 
-    .divider {
-      margin: 0.75rem 0;
-      border: none;
-      border-top: 1px solid #e5e7eb;
+    .small-input {
+      max-width: 80px;
     }
 
-    @media (max-width: 900px) {
-      main {
-        grid-template-columns: minmax(0, 1fr);
+    .tight {
+      margin-top: 0.25rem;
+    }
+
+    .highlight-row {
+      background: #f9fafb;
+    }
+
+    .warn {
+      color: #b91c1c;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 768px) {
+      th, td {
+        font-size: 0.78rem;
+      }
+
+      h1 {
+        font-size: 1.4rem;
       }
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <h1>Bucket + 3-Fund Simulator</h1>
-      <p class="subtitle">
-        Enter your current holdings and target rules to see where every dollar should go.
-      </p>
-    </header>
+  <div class="container">
+    <h1>3-Fund / 3-Bucket Simulator</h1>
+    <p class="muted">
+      Enter your portfolio value, bucket sizes (% or $), and fund allocations. Everything updates instantly.
+    </p>
 
-    <main>
-      <section class="card">
-        <h2>Current Portfolio</h2>
-        <form id="planner-form">
-          <div class="field-group">
-            <div class="field">
-              <label for="currentCash">Cash / short-term (Bucket 1) ($)</label>
-              <input type="number" id="currentCash" min="0" step="100" value="20000" />
-            </div>
-            <div class="field">
-              <label for="currentBonds">Bond funds (Bucket 2) ($)</label>
-              <input type="number" id="currentBonds" min="0" step="100" value="320000" />
-            </div>
-          </div>
+    <!-- BASIC INPUTS -->
+    <div class="card">
+      <h2>1. Basic Setup</h2>
+      <div class="grid">
+        <div>
+          <label for="totalPortfolio">Total portfolio value ($)</label>
+          <input type="number" id="totalPortfolio" min="0" step="1000" value="500000" />
+          <div class="note">Example: 500000 for a $500k portfolio.</div>
+        </div>
 
-          <div class="field-group">
-            <div class="field">
-              <label for="currentUS">US total market fund ($)</label>
-              <input type="number" id="currentUS" min="0" step="100" value="330000" />
-            </div>
-            <div class="field">
-              <label for="currentIntl">International total market fund ($)</label>
-              <input type="number" id="currentIntl" min="0" step="100" value="330000" />
-            </div>
-          </div>
+        <div>
+          <span class="subheading">Global 3-fund target</span>
+          <div class="note">Used only for comparison; actual allocation comes from the buckets.</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Fund</th>
+                <th>Name</th>
+                <th>Target %</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Fund 1</td>
+                <td><input type="text" id="fundName0" value="US Stock Index" /></td>
+                <td><input type="number" id="targetFundPct0" class="small-input" value="50" /></td>
+              </tr>
+              <tr>
+                <td>Fund 2</td>
+                <td><input type="text" id="fundName1" value="International Stock Index" /></td>
+                <td><input type="number" id="targetFundPct1" class="small-input" value="30" /></td>
+              </tr>
+              <tr>
+                <td>Fund 3</td>
+                <td><input type="text" id="fundName2" value="Bond Index" /></td>
+                <td><input type="number" id="targetFundPct2" class="small-input" value="20" /></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="note tight">Targets should sum to ~100%.</div>
+        </div>
+      </div>
+    </div>
 
-          <hr class="divider" />
+    <!-- BUCKET SIZES -->
+    <div class="card">
+      <h2>2. Bucket Sizes (3-Bucket Layer)</h2>
+      <div class="note">
+        You can size buckets by <strong>% of total</strong> or override with an explicit
+        <strong>dollar amount</strong>. Overrides win.
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Bucket</th>
+            <th>Target % of total</th>
+            <th>Override $ (optional)</th>
+            <th>Target $ from %</th>
+            <th>Effective $</th>
+            <th>Effective % of total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <input type="text" id="bucketName0" value="Short-term (0–5 yrs)" />
+            </td>
+            <td>
+              <input type="number" id="bucketTargetPct0" class="small-input" value="20" />
+            </td>
+            <td>
+              <input type="number" id="bucketOverride0" class="small-input" value="" />
+            </td>
+            <td><span id="bucketTargetDollar0">$0.00</span></td>
+            <td><span id="bucketEffectiveDollar0">$0.00</span></td>
+            <td><span id="bucketEffectivePct0">0.00%</span></td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="bucketName1" value="Mid-term (5–15 yrs)" />
+            </td>
+            <td>
+              <input type="number" id="bucketTargetPct1" class="small-input" value="30" />
+            </td>
+            <td>
+              <input type="number" id="bucketOverride1" class="small-input" value="" />
+            </td>
+            <td><span id="bucketTargetDollar1">$0.00</span></td>
+            <td><span id="bucketEffectiveDollar1">$0.00</span></td>
+            <td><span id="bucketEffectivePct1">0.00%</span></td>
+          </tr>
+          <tr>
+            <td>
+              <input type="text" id="bucketName2" value="Long-term (15+ yrs)" />
+            </td>
+            <td>
+              <input type="number" id="bucketTargetPct2" class="small-input" value="50" />
+            </td>
+            <td>
+              <input type="number" id="bucketOverride2" class="small-input" value="" />
+            </td>
+            <td><span id="bucketTargetDollar2">$0.00</span></td>
+            <td><span id="bucketEffectiveDollar2">$0.00</span></td>
+            <td><span id="bucketEffectivePct2">0.00%</span></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Check: sum of effective %</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><span id="bucketPctSum">0.00%</span></td>
+          </tr>
+        </tfoot>
+      </table>
+      <div class="note tight">All % inputs are in <strong>whole percent</strong> units (e.g. 20 = 20%).</div>
+    </div>
 
-          <h3>Spending &amp; Bucket Rules</h3>
+    <!-- WITHIN-BUCKET FUND PERCENTAGES -->
+    <div class="card">
+      <h2>3. Within-Bucket Fund Mix</h2>
+      <div class="note">
+        For each bucket, choose how its dollars are split across the 3 funds.
+        Rows should sum to ~100%.
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Bucket</th>
+            <th><span id="fundHeader0">Fund 1</span> %</th>
+            <th><span id="fundHeader1">Fund 2</span> %</th>
+            <th><span id="fundHeader2">Fund 3</span> %</th>
+            <th>Row sum %</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span id="bucketLabel0">Bucket 1</span></td>
+            <td><input type="number" id="bucketFundPct0_0" class="small-input" value="40" /></td>
+            <td><input type="number" id="bucketFundPct0_1" class="small-input" value="30" /></td>
+            <td><input type="number" id="bucketFundPct0_2" class="small-input" value="30" /></td>
+            <td><span id="bucketFundRowSum0">0.00%</span></td>
+          </tr>
+          <tr>
+            <td><span id="bucketLabel1">Bucket 2</span></td>
+            <td><input type="number" id="bucketFundPct1_0" class="small-input" value="60" /></td>
+            <td><input type="number" id="bucketFundPct1_1" class="small-input" value="25" /></td>
+            <td><input type="number" id="bucketFundPct1_2" class="small-input" value="15" /></td>
+            <td><span id="bucketFundRowSum1">0.00%</span></td>
+          </tr>
+          <tr>
+            <td><span id="bucketLabel2">Bucket 3</span></td>
+            <td><input type="number" id="bucketFundPct2_0" class="small-input" value="70" /></td>
+            <td><input type="number" id="bucketFundPct2_1" class="small-input" value="20" /></td>
+            <td><input type="number" id="bucketFundPct2_2" class="small-input" value="10" /></td>
+            <td><span id="bucketFundRowSum2">0.00%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-          <div class="field-group">
-            <div class="field">
-              <label for="spendMode">Spending basis</label>
-              <select id="spendMode">
-                <option value="percent">Percentage of portfolio</option>
-                <option value="fixed">Fixed annual amount</option>
-              </select>
-            </div>
+    <!-- DOLLARS BY BUCKET & FUND -->
+    <div class="card">
+      <h2>4. Dollars by Bucket & Fund</h2>
+      <div class="note">
+        This shows how each bucket’s dollars are split across the funds.
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Bucket</th>
+            <th><span id="fundHeader0b">Fund 1</span> $</th>
+            <th><span id="fundHeader1b">Fund 2</span> $</th>
+            <th><span id="fundHeader2b">Fund 3</span> $</th>
+            <th>Bucket total $</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span id="bucketLabel0b">Bucket 1</span></td>
+            <td><span id="bucketFundDollar0_0">$0.00</span></td>
+            <td><span id="bucketFundDollar0_1">$0.00</span></td>
+            <td><span id="bucketFundDollar0_2">$0.00</span></td>
+            <td><span id="bucketTotalDollar0">$0.00</span></td>
+          </tr>
+          <tr>
+            <td><span id="bucketLabel1b">Bucket 2</span></td>
+            <td><span id="bucketFundDollar1_0">$0.00</span></td>
+            <td><span id="bucketFundDollar1_1">$0.00</span></td>
+            <td><span id="bucketFundDollar1_2">$0.00</span></td>
+            <td><span id="bucketTotalDollar1">$0.00</span></td>
+          </tr>
+          <tr>
+            <td><span id="bucketLabel2b">Bucket 3</span></td>
+            <td><span id="bucketFundDollar2_0">$0.00</span></td>
+            <td><span id="bucketFundDollar2_1">$0.00</span></td>
+            <td><span id="bucketFundDollar2_2">$0.00</span></td>
+            <td><span id="bucketTotalDollar2">$0.00</span></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td>Total across buckets</td>
+            <td colspan="3" class="align-right"><span id="fundDollarSum">$0.00</span></td>
+            <td><span id="fundPctSum">0.00%</span></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
-            <div class="field" id="withdrawRateField">
-              <label for="withdrawalRate">Withdrawal rate (% of portfolio)</label>
-              <input type="number" id="withdra
+    <!-- FUND SUMMARY -->
+    <div class="card">
+      <h2>5. Fund Summary (Effective 3-Fund Allocation)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Fund</th>
+            <th>Actual $</th>
+            <th>Actual %</th>
+            <th>Target %</th>
+            <th>Diff (pp)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span id="fundSummaryName0">Fund 1</span></td>
+            <td><span id="fundTotalDollar0">$0.00</span></td>
+            <td><span id="fundTotalPct0">0.00%</span></td>
+            <td><span id="fundTargetPct0">0.00%</span></td>
+            <td><span id="fundDiffPct0">0.00 pp</span></td>
+          </tr>
+          <tr>
+            <td><span id="fundSummaryName1">Fund 2</span></td>
+            <td><span id="fundTotalDollar1">$0.00</span></td>
+            <td><span id="fundTotalPct1">0.00%</span></td>
+            <td><span id="fundTargetPct1">0.00%</span></td>
+            <td><span id="fundDiffPct1">0.00 pp</span></td>
+          </tr>
+          <tr>
+            <td><span id="fundSummaryName2">Fund 3</span></td>
+            <td><span id="fundTotalDollar2">$0.00</span></td>
+            <td><span id="fundTotalPct2">0.00%</span></td>
+            <td><span id="fundTargetPct2">0.00%</span></td>
+            <td><span id="fundDiffPct2">0.00 pp</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="note tight">
+        “Diff (pp)” = actual % − target %, in percentage points. Positive means overweight; negative = underweight.
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Usage notes</h3>
+      <ul class="note">
+        <li>Change any number; results update immediately (all calculations are client-side).</li>
+        <li>Bucket overrides (in $) take precedence over bucket % of total.</li>
+        <li>Within each bucket, row fund % should sum to ~100% for clean math.</li>
+        <li>Global target % is just a benchmark; actual allocation comes from the bucket design.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const NUM_BUCKETS = 3;
+      const NUM_FUNDS = 3;
+
+      function getNumber(id) {
+        const el = document.getElementById(id);
+        if (!el) return 0;
+        const v = parseFloat(el.value);
+        return isNaN(v) ? 0 : v;
+      }
+
+      function getText(id) {
+        const el = document.getElementById(id);
+        return el && el.value.trim() !== "" ? el.value.trim() : "";
+      }
+
+      function formatMoney(x) {
+        if (!isFinite(x)) return "$0.00";
+        return "$" + x.toFixed(2);
+      }
+
+      function formatPercent(x) {
+        if (!isFinite(x)) return "0.00%";
+        return x.toFixed(2) + "%";
+      }
+
+      function recalc() {
+        const total = getNumber("totalPortfolio");
+        const fundTotalDollar = new Array(NUM_FUNDS).fill(0);
+        const bucketEffectiveDollar = new Array(NUM_BUCKETS).fill(0);
+        const bucketEffectivePct = new Array(NUM_BUCKETS).fill(0);
+
+        // Update fund header labels from names
+        for (let j = 0; j < NUM_FUNDS; j++) {
+          const name = getText("fundName" + j) || "Fund " + (j + 1);
+          const headerId = "fundHeader" + j;
+          const headerIdB = "fundHeader" + j + "b";
+          const sumNameId = "fundSummaryName" + j;
+          const targetPctInput = getNumber("targetFundPct" + j);
+
+          const headerEl = document.getElementById(headerId);
+          const headerElB = document.getElementById(headerIdB);
+          const sumEl = document.getElementById(sumNameId);
+          const targetPctSpan = document.getElementById("fundTargetPct" + j);
+
+          if (headerEl) headerEl.textContent = name;
+          if (headerElB) headerElB.textContent = name;
+          if (sumEl) sumEl.textContent = name;
+          if (targetPctSpan) targetPctSpan.textContent = formatPercent(targetPctInput);
+        }
+
+        // Buckets: compute target $, effective $, effective %
+        for (let i = 0; i < NUM_BUCKETS; i++) {
+          const targetPct = getNumber("bucketTargetPct" + i); // as whole percent
+          const overrideDollar = getNumber("bucketOverride" + i);
+          const bucketName = getText("bucketName" + i) || "Bucket " + (i + 1);
+
+          const targetDollar = total * (targetPct / 100);
+          const effectiveDollar = overrideDollar > 0 ? overrideDollar : targetDollar;
+          const effectivePct = total > 0 ? (effectiveDollar / total) * 100 : 0;
+
+          bucketEffectiveDollar[i] = effectiveDollar;
+          bucketEffectivePct[i] = effectivePct;
+
+          const targetDollarSpan = document.getElementById("bucketTargetDollar" + i);
+          const effDollarSpan = document.getElementById("bucketEffectiveDollar" + i);
+          const effPctSpan = document.getElementById("bucketEffectivePct" + i);
+
+          if (targetDollarSpan) targetDollarSpan.textContent = formatMoney(targetDollar);
+          if (effDollarSpan) effDollarSpan.textContent = formatMoney(effectiveDollar);
+          if (effPctSpan) effPctSpan.textContent = formatPercent(effectivePct);
+
+          // Propagate bucket labels to other tables
+          const lblIds = ["bucketLabel" + i, "bucketLabel" + i + "b"];
+          lblIds.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = bucketName;
+          });
+
+          // Within-bucket fund distributions
+          let rowPctSum = 0;
+          let bucketRowDollarSum = 0;
+          for (let j = 0; j < NUM_FUNDS; j++) {
+            const fundPct = getNumber("bucketFundPct" + i + "_" + j); // whole percent
+            rowPctSum += fundPct;
+
+            const fundDollar = effectiveDollar * (fundPct / 100);
+            bucketRowDollarSum += fundDollar;
+            fundTotalDollar[j] += fundDollar;
+
+            const cellId = "bucketFundDollar" + i + "_" + j;
+            const cellEl = document.getElementById(cellId);
+            if (cellEl) cellEl.textContent = formatMoney(fundDollar);
+          }
+
+          const rowSumEl = document.getElementById("bucketFundRowSum" + i);
+          if (rowSumEl) rowSumEl.textContent = formatPercent(rowPctSum);
+
+          const bucketTotalDollarSpan = document.getElementById("bucketTotalDollar" + i);
+          if (bucketTotalDollarSpan) bucketTotalDollarSpan.textContent = formatMoney(bucketRowDollarSum);
+        }
+
+        // Check: sum of bucket effective % should be ~100%
+        const bucketPctSum = bucketEffectivePct.reduce((a, b) => a + b, 0);
+        const bucketPctSumEl = document.getElementById("bucketPctSum");
+        if (bucketPctSumEl) bucketPctSumEl.textContent = formatPercent(bucketPctSum);
+
+        // Totals per fund
+        let totalFromFunds = 0;
+        for (let j = 0; j < NUM_FUNDS; j++) {
+          totalFromFunds += fundTotalDollar[j];
+        }
+
+        for (let j = 0; j < NUM_FUNDS; j++) {
+          const dollar = fundTotalDollar[j];
+          const pct = total > 0 ? (dollar / total) * 100 : 0;
+          const targetPct = getNumber("targetFundPct" + j);
+
+          const dollarEl = document.getElementById("fundTotalDollar" + j);
+          const pctEl = document.getElementById("fundTotalPct" + j);
+          const diffEl = document.getElementById("fundDiffPct" + j);
+
+          if (dollarEl) dollarEl.textContent = formatMoney(dollar);
+          if (pctEl) pctEl.textContent = formatPercent(pct);
+
+          if (diffEl) {
+            const diff = pct - targetPct;
+            const sign = diff > 0 ? "+" : "";
+            diffEl.textContent = sign + diff.toFixed(2) + " pp";
+          }
+        }
+
+        const fundDollarSumEl = document.getElementById("fundDollarSum");
+        const fundPctSumEl = document.getElementById("fundPctSum");
+        if (fundDollarSumEl) fundDollarSumEl.textContent = formatMoney(totalFromFunds);
+        if (fundPctSumEl) {
+          const pct = total > 0 ? (totalFromFunds / total) * 100 : 0;
+          fundPctSumEl.textContent = formatPercent(pct);
+        }
+      }
+
+      function attachInputs() {
+        const ids = [
+          "totalPortfolio",
+          "fundName0", "fundName1", "fundName2",
+          "targetFundPct0", "targetFundPct1", "targetFundPct2",
+          "bucketName0", "bucketName1", "bucketName2",
+          "bucketTargetPct0", "bucketTargetPct1", "bucketTargetPct2",
+          "bucketOverride0", "bucketOverride1", "bucketOverride2",
+          "bucketFundPct0_0", "bucketFundPct0_1", "bucketFundPct0_2",
+          "bucketFundPct1_0", "bucketFundPct1_1", "bucketFundPct1_2",
+          "bucketFundPct2_0", "bucketFundPct2_1", "bucketFundPct2_2"
+        ];
+
+        ids.forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.addEventListener("input", recalc);
+          }
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        attachInputs();
+        recalc();
+      });
+    })();
+  </script>
+</body>
+</html>
